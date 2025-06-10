@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Prediction</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .list-group-item {
+            background-color: #e9ecef;
+            border: none;
+        }
+        .list-group-item-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .list-group-item-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">📊 Student Performance Prediction</h2>
+        <form method="post" action="/">
+            <div class="form-group">
+                <label for="hours_studied">Hours Studied:</label>
+                <input type="number" step="0.1" name="hours_studied" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="previous_scores">Previous Scores:</label>
+                <input type="number" step="0.1" name="previous_scores" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="extracurricular_activities">Extracurricular Activities (Yes/No):</label>
+                <input type="text" name="extracurricular_activities" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="sleep_hours">Sleep Hours:</label>
+                <input type="number" step="0.1" name="sleep_hours" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="sample_question_papers_practiced">Sample Question Papers Practiced:</label>
+                <input type="number" name="sample_question_papers_practiced" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Predict</button>
+        </form>
+
+        {% if prediction is not none %}
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h4>Prediction: 
+                        <span class="{% if result == 'Fail' %}text-danger{% elif result == 'Pass' %}text-success{% endif %}">{{ result }}</span>
+                    </h4>
+                    <p>Predicted Performance Index: <strong>{{ prediction }}</strong></p>
+                    <h5>Suggested Improvements:</h5>
+                    <ul class="list-group">
+                        {% for tip in feedback %}
+                            <li class="list-group-item">
+                                {{ tip }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <form action="/download_report" method="post">
+                        <input type="hidden" name="hours_studied" value="{{ request.form.hours_studied }}">
+                        <input type="hidden" name="previous_scores" value="{{ request.form.previous_scores }}">
+                        <input type="hidden" name="extracurricular_activities" value="{{ request.form.extracurricular_activities }}">
+                        <input type="hidden" name="sleep_hours" value="{{ request.form.sleep_hours }}">
+                        <input type="hidden" name="sample_question_papers_practiced" value="{{ request.form.sample_question_papers_practiced }}">
+                        <input type="hidden" name="predicted_performance" value="{{ prediction }}">
+                        <button type="submit" class="btn btn-success mt-3">Download Improvement Report as PDF</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
